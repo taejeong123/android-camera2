@@ -108,6 +108,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
 
     private TextView fName;
     private EditText idx;
+    private NumberPicker typePicker;
     private NumberPicker natCodePicker;
     private NumberPicker unitPicker;
     private NumberPicker fbPicker;
@@ -168,7 +169,10 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         @Override
         public void onImageAvailable(ImageReader reader) {
             String fileName = Utils.getFileName(getInfo());
-            String folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()];
+
+            String folder;
+            if (natCodePicker.getDisplayedValues() == null) { folder = "MIX"; }
+            else { folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()]; }
             mFile = new File(getActivity().getExternalFilesDir(null) + File.separator + folder + File.separator + fileName);
 
             if (fileName == null) {
@@ -183,8 +187,14 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         MoneyVO moneyVO = new MoneyVO();
         try {
             moneyVO.setIdx(idx.getText().toString());
-            moneyVO.setNatCode(natCodePicker.getDisplayedValues()[natCodePicker.getValue()]);
-            moneyVO.setUnit(unitPicker.getDisplayedValues()[unitPicker.getValue()]);
+            moneyVO.setType(typePicker.getDisplayedValues()[typePicker.getValue()]);
+
+            if (natCodePicker.getDisplayedValues() == null) { moneyVO.setNatCode(null); }
+            else { moneyVO.setNatCode(natCodePicker.getDisplayedValues()[natCodePicker.getValue()]); }
+
+            if (unitPicker.getDisplayedValues() == null) { moneyVO.setUnit(null); }
+            else { moneyVO.setUnit(unitPicker.getDisplayedValues()[unitPicker.getValue()]); }
+
             moneyVO.setFb(fbPicker.getDisplayedValues()[fbPicker.getValue()]);
             moneyVO.setDistance(distancePicker.getDisplayedValues()[distancePicker.getValue()]);
             moneyVO.setDegree(degreePicker.getDisplayedValues()[degreePicker.getValue()]);
@@ -286,12 +296,14 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
 
         fName = view.findViewById(R.id.file_name);
         idx = view.findViewById(R.id.idx);
+        typePicker = view.findViewById(R.id.type_picker);
         natCodePicker = view.findViewById(R.id.nat_code_picker);
         unitPicker = view.findViewById(R.id.unit_picker);
         fbPicker = view.findViewById(R.id.fb_picker);
         distancePicker = view.findViewById(R.id.distance_picker);
         degreePicker = view.findViewById(R.id.degree_picker);
 
+        typePicker.setOnValueChangedListener(this);
         natCodePicker.setOnValueChangedListener(this);
         unitPicker.setOnValueChangedListener(this);
         fbPicker.setOnValueChangedListener(this);
@@ -300,13 +312,15 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
 
         idx.addTextChangedListener(textWatcher);
 
-        Utils.setDegreePicker(natCodePicker, ItemList.getNatCodeNUnitJson(getResources()));
-        Utils.setDegreePicker(unitPicker, ItemList.getNatCodeNUnitJson(getResources()));
-        Utils.setDegreePicker(fbPicker, ItemList.fbList);
-        Utils.setDegreePicker(distancePicker, ItemList.distanceList);
-        Utils.setDegreePicker(degreePicker, ItemList.getDegreeList());
+        Utils.setPicker(typePicker, ItemList.typeList);
+        Utils.setPicker(natCodePicker, ItemList.getNatCodeNUnitJson(getResources()));
+        Utils.setPicker(unitPicker, ItemList.getNatCodeNUnitJson(getResources()));
+        Utils.setPicker(fbPicker, ItemList.fbList);
+        Utils.setPicker(distancePicker, ItemList.distanceList);
+        Utils.setPicker(degreePicker, ItemList.getDegreeList());
 
         idx.setText(PreferenceManager.getString(getContext(), "idx"));
+        typePicker.setValue(PreferenceManager.getInt(getContext(), "type"));
         fbPicker.setValue(PreferenceManager.getInt(getContext(), "fb"));
         distancePicker.setValue(PreferenceManager.getInt(getContext(), "distance"));
         degreePicker.setValue(PreferenceManager.getInt(getContext(), "degree"));
@@ -348,16 +362,68 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
         String fileName = Utils.getFileName(getInfo());
         fName.setText(fileName);
-        String folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()];
+
+        String folder;
+        if (natCodePicker.getDisplayedValues() == null) { folder = "MIX"; }
+        else { folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()]; }
         mFile = new File(getActivity().getExternalFilesDir(null) + File.separator + folder + File.separator + fileName);
 
+        String type = typePicker.getDisplayedValues()[typePicker.getValue()];
+
         switch (numberPicker.getId()) {
-            case R.id.nat_code_picker: {
+            case R.id.type_picker: {
                 try {
-                    unitPicker.setDisplayedValues(null);
+                    Utils.clearPicker(natCodePicker);
+                    Utils.clearPicker(unitPicker);
 
                     JSONObject jsonObject = ItemList.getNatCodeNUnitJson(getResources());
-                    JSONArray arr = jsonObject.getJSONArray("info");
+                    JSONArray arr;
+                    if (type.equals("Coin")) {
+                        arr = jsonObject.getJSONArray("coin");
+                    } else if (type.equals("Paper")) {
+                        arr = jsonObject.getJSONArray("paper");
+                    } else {
+                        return;
+                    }
+                    JSONArray unit = arr.getJSONObject(i1).getJSONArray("unit");
+
+                    ArrayList<String> codeList = new ArrayList<>();
+                    for (int j = 0; j < arr.length(); j++) {
+                        JSONObject jsonItem = arr.getJSONObject(j);
+                        String code = jsonItem.getString("code");
+                        codeList.add(code);
+                    }
+
+                    String[] newCodeList = new String[codeList.size()];
+                    for (int j = 0; j < codeList.size(); j++) {
+                        newCodeList[j] = codeList.get(j);
+                    }
+
+                    String[] newUnitList = new String[unit.length()];
+                    for (int j = 0; j < unit.length(); j++) {
+                        newUnitList[j] = unit.getString(j);
+                    }
+
+                    Utils.setPicker(natCodePicker, newCodeList);
+                    Utils.setPicker(unitPicker, newUnitList);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case R.id.nat_code_picker: {
+                try {
+                    Utils.clearPicker(unitPicker);
+
+                    JSONObject jsonObject = ItemList.getNatCodeNUnitJson(getResources());
+                    JSONArray arr;
+                    if (type.equals("Coin")) {
+                        arr = jsonObject.getJSONArray("coin");
+                    } else if (type.equals("Paper")) {
+                        arr = jsonObject.getJSONArray("paper");
+                    } else {
+                        return;
+                    }
                     JSONArray unit = arr.getJSONObject(i1).getJSONArray("unit");
 
                     String[] newUnitList = new String[unit.length()];
@@ -365,7 +431,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
                         newUnitList[j] = unit.getString(j);
                     }
 
-                    Utils.setDegreePicker(unitPicker, newUnitList);
+                    Utils.setPicker(unitPicker, newUnitList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -382,7 +448,10 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String fileName = Utils.getFileName(getInfo());
             fName.setText(fileName);
-            String folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()];
+
+            String folder;
+            if (natCodePicker.getDisplayedValues() == null) { folder = "MIX"; }
+            else { folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()]; }
             mFile = new File(getActivity().getExternalFilesDir(null) + File.separator + folder + File.separator + fileName);
         }
 
@@ -665,6 +734,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
             mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback, mBackgroundHandler);
 
             PreferenceManager.setString(getContext(), "idx", idx.getText().toString());
+            PreferenceManager.setInt(getContext(), "type", typePicker.getValue());
             PreferenceManager.setInt(getContext(), "code", natCodePicker.getValue());
             PreferenceManager.setInt(getContext(), "unit", unitPicker.getValue());
             PreferenceManager.setInt(getContext(), "fb", fbPicker.getValue());

@@ -2,6 +2,7 @@ package com.example.bitflow;
 
 public class MoneyVO {
     private String idx;
+    private String type;
     private String natCode;
     private String unit;
     private String fb;
@@ -14,6 +15,14 @@ public class MoneyVO {
 
     public void setIdx(String idx) {
         this.idx = idx;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getNatCode() {

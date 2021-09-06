@@ -1,6 +1,7 @@
 package com.example.bitflow;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
@@ -16,12 +17,12 @@ public class Utils {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public static void setDegreePicker(NumberPicker numberPicker, JSONObject jsonObject) {
+    public static void setPicker(NumberPicker numberPicker, JSONObject jsonObject) {
 
         ArrayList<String> codeList = new ArrayList<>();
 
         try {
-            JSONArray arr = jsonObject.getJSONArray("info");
+            JSONArray arr = jsonObject.getJSONArray("coin");
 
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject jsonItem = arr.getJSONObject(i);
@@ -37,7 +38,7 @@ public class Utils {
                 case R.id.nat_code_picker: {
                     String[] newCodeList = new String[codeList.size()];
                     newCodeList = codeList.toArray(newCodeList);
-                    setDegreePicker(numberPicker, newCodeList);
+                    setPicker(numberPicker, newCodeList);
                     break;
                 }
                 case R.id.unit_picker: {
@@ -45,7 +46,7 @@ public class Utils {
                     for (int i = 0; i < unit.length(); i++) {
                         newUnitList[i] = unit.getString(i);
                     }
-                    setDegreePicker(numberPicker, newUnitList);
+                    setPicker(numberPicker, newUnitList);
                     break;
                 }
             }
@@ -54,32 +55,49 @@ public class Utils {
         }
     }
 
-    public static void setDegreePicker(NumberPicker numberPicker, String[] list) {
+    public static void setPicker(NumberPicker numberPicker, String[] list) {
+        if (list.length <= 0) {
+            clearPicker(numberPicker);
+            return;
+        }
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(list.length - 1);
         numberPicker.setDisplayedValues(list);
     }
 
+    public static void clearPicker(NumberPicker numberPicker) {
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue(0);
+        numberPicker.setDisplayedValues(null);
+    }
+
     public static String getFileName(MoneyVO moneyVO) {
         String idx = moneyVO.getIdx();
+        String type = moneyVO.getType();
         String code = moneyVO.getNatCode();
         String unit = moneyVO.getUnit();
         String fb = moneyVO.getFb();
         String distance = moneyVO.getDistance();
         String degree = moneyVO.getDegree();
 
-        if (idx.equals("")) {
-            return null;
-        }
+        if (idx.equals("")) { return null; }
 
         idx = String.format("%05d", Integer.parseInt(idx));
-        unit = unit.replaceAll("\\.", "");
         distance = distance.replace("cm", "");
         degree = degree.replace("°", "");
+
+        if (type.equals("Coin")) { type = "C"; }
+        else if (type.equals("Paper")) { type = "P"; }
+        else { return idx + "_" + type + "_" + fb + "_" + distance + "_" + degree + ".jpg"; }
 
         if (fb.equals("Front")) { fb = "F"; }
         else if (fb.equals("Back")) { fb = "B"; }
 
+        if (code == null || code.equals("MIX") || unit == null) {
+            return idx + "_" + type + "_" + code + "_" + fb + "_" + distance + "_" + degree + ".jpg";
+        }
+
+        unit = unit.replaceAll("\\.", "");
         if (unit.contains("(구)")) {
             unit = unit.replaceAll("\\(구\\)", "o");
         } else if (unit.contains("(신)")) {
@@ -88,7 +106,6 @@ public class Utils {
             unit = unit.replaceAll("\\(동전\\)", "c");
         }
 
-        String fileName = idx + "_" + code + "_" + unit + "_" + fb + "_" + distance + "_" + degree + ".jpg";
-        return fileName;
+        return idx + "_" + type + "_" + code + "_" + unit + "_" + fb + "_" + distance + "_" + degree + ".jpg";
     }
 }

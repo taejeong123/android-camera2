@@ -7,7 +7,7 @@
 
     <style name="AppTheme.Picker" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="AppTheme.EditText" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">

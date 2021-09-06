@@ -28,16 +28,46 @@
             <LinearLayout
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
 
-                <TextView
-                    android:id="@+id/file_name"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_weight=".6"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:text="Select Options"/>
+                    android:gravity="center"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:id="@+id/file_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:text="Select Options"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight=".4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_gravity="center">
+
+                    <EditText
+                        android:id="@+id/idx"
+                        android:layout_width="80dp"
+                        android:layout_height="50dp"
+                        android:inputType="number"
+                        android:hint="ID"
+                        android:textSize="15dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:theme="@style/AppTheme.EditText"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -52,18 +82,16 @@
                     android:layout_weight=".25"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_gravity="center">
+                    android:gravity="center">
 
-                    <EditText
-                        android:id="@+id/idx"
-                        android:layout_width="80dp"
+                    <NumberPicker
+                        android:id="@+id/type_picker"
+                        android:layout_width="100dp"
                         android:layout_height="60dp"
-                        android:inputType="number"
-                        android:hint="ID"
-                        android:textColor="@color/white"
+                        android:layout_gravity="center"
                         android:gravity="center"
-                        android:theme="@style/AppTheme.EditText"/>
+                        android:descendantFocusability="blocksDescendants"
+                        android:theme="@style/AppTheme.Picker"/>
 
                 </LinearLayout>
 
@@ -76,7 +104,7 @@
                     <NumberPicker
                         android:id="@+id/nat_code_picker"
                         android:layout_width="100dp"
-                        android:layout_height="80dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:descendantFocusability="blocksDescendants"
@@ -93,7 +121,7 @@
                     <NumberPicker
                         android:id="@+id/unit_picker"
                         android:layout_width="100dp"
-                        android:layout_height="80dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:descendantFocusability="blocksDescendants"
@@ -110,7 +138,7 @@
                     <NumberPicker
                         android:id="@+id/fb_picker"
                         android:layout_width="100dp"
-                        android:layout_height="80dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:descendantFocusability="blocksDescendants"
@@ -136,7 +164,7 @@
                     <NumberPicker
                         android:id="@+id/distance_picker"
                         android:layout_width="100dp"
-                        android:layout_height="80dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:descendantFocusability="blocksDescendants"
@@ -172,7 +200,7 @@
                     <NumberPicker
                         android:id="@+id/degree_picker"
                         android:layout_width="100dp"
-                        android:layout_height="80dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:descendantFocusability="blocksDescendants"
