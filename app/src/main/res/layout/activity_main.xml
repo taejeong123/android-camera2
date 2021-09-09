@@ -13,9 +13,4 @@
         android:background="#000000"
         tools:context=".CameraActivity"/>
 
-    <FrameLayout
-        android:id="@+id/infoListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
 </LinearLayout>
