@@ -6,6 +6,7 @@
     </style>
 
     <style name="AppTheme.Picker" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
+        <item name="android:colorControlNormal">@color/black</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textSize">15sp</item>
     </style>
