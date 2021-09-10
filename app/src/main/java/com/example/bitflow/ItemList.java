@@ -16,7 +16,8 @@ public class ItemList {
 
     public static String[] typeList = new String[]{"Coin", "Paper", "MIX", "Coin", "Paper", "MIX"};
     public static String[] fbList = new String[]{"Front", "Back"};
-    public static String[] distanceList = new String[]{"4cm", "7cm"};
+    public static String[] distanceCoinList = new String[]{"7cm", "10cm"};
+    public static String[] distanceOtherList = new String[]{"20cm", "23cm"};
 
     public static String[] getDegreeList() {
         ArrayList<String> degreeList = new ArrayList<>();

@@ -3,6 +3,7 @@ package com.example.bitflow;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ public class MainActivity extends FragmentActivity {
         if (null == savedInstanceState) {
             if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
+                finish();
             } else {
                 getFragmentManager()
                         .beginTransaction()

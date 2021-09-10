@@ -175,7 +175,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
             else { folder = natCodePicker.getDisplayedValues()[natCodePicker.getValue()]; }
             mFile = new File(getActivity().getExternalFilesDir(null) + File.separator + folder + File.separator + fileName);
 
-            if (fileName == null) {
+            if (fileName == null || fName.getText().equals("")) {
                 Utils.displayMessage(getContext(), "empty value");
             } else {
                 mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
@@ -316,7 +316,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         Utils.setPicker(natCodePicker, ItemList.getNatCodeNUnitJson(getResources()));
         Utils.setPicker(unitPicker, ItemList.getNatCodeNUnitJson(getResources()));
         Utils.setPicker(fbPicker, ItemList.fbList);
-        Utils.setPicker(distancePicker, ItemList.distanceList);
+        Utils.setPicker(distancePicker, ItemList.distanceCoinList);
         Utils.setPicker(degreePicker, ItemList.getDegreeList());
 
         idx.setText(PreferenceManager.getString(getContext(), "idx"));
@@ -375,14 +375,18 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
                 try {
                     Utils.clearPicker(natCodePicker);
                     Utils.clearPicker(unitPicker);
+                    Utils.clearPicker(distancePicker);
 
                     JSONObject jsonObject = ItemList.getNatCodeNUnitJson(getResources());
                     JSONArray arr;
                     if (type.equals("Coin")) {
                         arr = jsonObject.getJSONArray("coin");
+                        Utils.setPicker(distancePicker, ItemList.distanceCoinList);
                     } else if (type.equals("Paper")) {
                         arr = jsonObject.getJSONArray("paper");
+                        Utils.setPicker(distancePicker, ItemList.distanceOtherList);
                     } else {
+                        Utils.setPicker(distancePicker, ItemList.distanceOtherList);
                         return;
                     }
                     JSONArray unit = arr.getJSONObject(i1).getJSONArray("unit");
@@ -406,6 +410,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
 
                     Utils.setPicker(natCodePicker, newCodeList);
                     Utils.setPicker(unitPicker, newUnitList);
+                    fName.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -432,6 +437,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
                     }
 
                     Utils.setPicker(unitPicker, newUnitList);
+                    fName.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
