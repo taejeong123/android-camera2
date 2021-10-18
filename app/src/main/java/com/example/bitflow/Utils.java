@@ -17,12 +17,19 @@ public class Utils {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public static void setPicker(NumberPicker numberPicker, JSONObject jsonObject) {
-
+    public static void setPicker(NumberPicker numberPicker, JSONObject jsonObject, int text_idx) {
         ArrayList<String> codeList = new ArrayList<>();
 
         try {
-            JSONArray arr = jsonObject.getJSONArray("coin");
+            JSONArray arr;
+            if (text_idx == 0 || text_idx == 3) {
+                arr = jsonObject.getJSONArray("coin");
+            } else if (text_idx == 1 || text_idx == 4) {
+                arr = jsonObject.getJSONArray("paper");
+            } else {
+                clearPicker(numberPicker);
+                return;
+            }
 
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject jsonItem = arr.getJSONObject(i);

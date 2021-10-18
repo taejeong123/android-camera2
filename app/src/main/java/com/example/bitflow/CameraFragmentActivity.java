@@ -43,6 +43,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -114,6 +115,9 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
     private NumberPicker fbPicker;
     private NumberPicker distancePicker;
     private NumberPicker degreePicker;
+
+    private Button btnPrev;
+    private Button btnNext;
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
 
@@ -302,6 +306,8 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         fbPicker = view.findViewById(R.id.fb_picker);
         distancePicker = view.findViewById(R.id.distance_picker);
         degreePicker = view.findViewById(R.id.degree_picker);
+        btnPrev = view.findViewById(R.id.btn_prev);
+        btnNext = view.findViewById(R.id.btn_next);
 
         typePicker.setOnValueChangedListener(this);
         natCodePicker.setOnValueChangedListener(this);
@@ -309,24 +315,36 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
         fbPicker.setOnValueChangedListener(this);
         distancePicker.setOnValueChangedListener(this);
         degreePicker.setOnValueChangedListener(this);
+        btnPrev.setOnClickListener(this);
+        btnNext.setOnClickListener(this);
 
         idx.addTextChangedListener(textWatcher);
 
+        int text_idx = PreferenceManager.getInt(getContext(), "type");
+
         Utils.setPicker(typePicker, ItemList.typeList);
-        Utils.setPicker(natCodePicker, ItemList.getNatCodeNUnitJson(getResources()));
-        Utils.setPicker(unitPicker, ItemList.getNatCodeNUnitJson(getResources()));
+        Utils.setPicker(natCodePicker, ItemList.getNatCodeNUnitJson(getResources()), text_idx);
+        Utils.setPicker(unitPicker, ItemList.getNatCodeNUnitJson(getResources()), text_idx);
         Utils.setPicker(fbPicker, ItemList.fbList);
-        Utils.setPicker(distancePicker, ItemList.distanceCoinList);
+        if (text_idx == 0 || text_idx == 3) {
+            Utils.setPicker(distancePicker, ItemList.distanceCoinList);
+        } else {
+            Utils.setPicker(distancePicker, ItemList.distanceOtherList);
+        }
         Utils.setPicker(degreePicker, ItemList.getDegreeList());
 
+        Log.e("!@!@", "" + PreferenceManager.getInt(getContext(), "type"));
+
         idx.setText(PreferenceManager.getString(getContext(), "idx"));
-        typePicker.setValue(PreferenceManager.getInt(getContext(), "type"));
+        typePicker.setValue(text_idx);
         fbPicker.setValue(PreferenceManager.getInt(getContext(), "fb"));
         distancePicker.setValue(PreferenceManager.getInt(getContext(), "distance"));
         degreePicker.setValue(PreferenceManager.getInt(getContext(), "degree"));
 
         int code = PreferenceManager.getInt(getContext(), "code");
         int unit = PreferenceManager.getInt(getContext(), "unit");
+
+        Log.e("!@!@!@!@", "" + code + " " + unit);
 
         if (code != -1 && unit != -1) {
             natCodePicker.setValue(code);
@@ -354,6 +372,18 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
                 takePicture();
                 break;
             }
+            case R.id.btn_prev: {
+                int prev = Integer.parseInt(String.valueOf(idx.getText())) - 1;
+                idx.setText(prev + "");
+                break;
+            }
+            case R.id.btn_next: {
+                int next = Integer.parseInt(String.valueOf(idx.getText())) + 1;
+                idx.setText(next + "");
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -362,6 +392,9 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
         String fileName = Utils.getFileName(getInfo());
         fName.setText(fileName);
+
+
+        System.out.println();
 
         String folder;
         if (natCodePicker.getDisplayedValues() == null) { folder = "MIX"; }
@@ -502,7 +535,7 @@ public class CameraFragmentActivity extends Fragment implements View.OnClickList
 
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
                 mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);

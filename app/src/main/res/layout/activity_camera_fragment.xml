@@ -146,16 +146,34 @@
                     android:gravity="center"
                     android:layout_gravity="center">
 
+                    <Button
+                        android:id="@+id/btn_prev"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:text="&lt;"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:background="@color/black"/>
+
                     <EditText
                         android:id="@+id/idx"
                         android:layout_width="80dp"
                         android:layout_height="50dp"
                         android:inputType="number"
                         android:hint="ID"
-                        android:textSize="15dp"
+                        android:textSize="15sp"
                         android:textColor="@color/white"
                         android:gravity="center"
                         android:theme="@style/AppTheme.EditText"/>
+
+                    <Button
+                        android:id="@+id/btn_next"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:text="&gt;"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:background="@color/black"/>
 
                 </LinearLayout>
 
